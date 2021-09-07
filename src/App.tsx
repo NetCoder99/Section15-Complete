@@ -11,24 +11,30 @@ function App() {
 
   const { isLoading, error, sendRequest: fetchTasks } = useHttp();
 
+  const transformTasks = (taskList : taskObj[]) => {
+    console.log("App.useEffect.transformTasks");
+    const loadedTasks = [];
+    for (const taskKey in taskList) {
+      loadedTasks.push({ id: taskList[taskKey].id, text: taskList[taskKey].text });
+    }
+    setTasks(loadedTasks);
+  };
+  
   useEffect(() => {
     console.log("App.useEffect");
-    const transformTasks = (taskList : taskObj[]) => {
-      console.log("App.useEffect.transformTasks");
-
-      const loadedTasks = [];
-      for (const taskKey in taskList) {
-        loadedTasks.push({ id: taskList[taskKey].id, text: taskList[taskKey].text });
-      }
-
-      setTasks(loadedTasks);
-    };
-
     fetchTasks(
       { url: 'http://localhost:8081/Tasks/getTasks' },
       transformTasks
     );
   }, [fetchTasks]);
+
+  const taskFetchHandler = () => {
+    console.log("App.taskFetchHandler")
+    fetchTasks(
+      { url: 'http://localhost:8081/Tasks/getTasks' },
+      transformTasks
+    );    
+  };
 
   const taskAddHandler = (task: taskObj) => {
     console.log("App.taskAddHandler")
@@ -47,7 +53,7 @@ function App() {
         items={tasks}
         loading={isLoading}
         error={error}
-        onFetch={fetchTasks}
+        onFetch={taskFetchHandler}
         onDelete={taskDelHandler}
       />
     </React.Fragment>

@@ -21,7 +21,7 @@ export function makeServer({ environment = "dev" } = {}) {
 
     //'http://localhost:8081/Tasks/getTasks'
     routes() {
-      this.timing = 500
+      this.timing = 250
       this.get("http://localhost:8081/Tasks/getTasks", (schema) => {
         console.log("makeServer.getTasks");
         return schema.db.taskEntries;
@@ -31,13 +31,13 @@ export function makeServer({ environment = "dev" } = {}) {
         const newTaskTemp = JSON.parse(request.requestBody);
         const newTask = schema.taskEntries.create(newTaskTemp);
         return newTask;
-      },{ timing: 1000 })
+      },{ timing: 200 })
       this.post("http://localhost:8081/Tasks/delTask", (schema, request) => {
         console.log("makeServer.delTask");
         const taskId = JSON.parse(request.requestBody).taskId;
         schema.taskEntries.find(taskId).destroy();
         return taskId;
-      },{ timing: 500 })
+      },{ timing: 200 })
     },
   });
 

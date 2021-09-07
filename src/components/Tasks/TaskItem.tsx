@@ -1,9 +1,10 @@
 import classes from "./TaskItem.module.css";
 import { BsTrash } from "react-icons/bs";
 
-const TaskItem = (props) => {
+const TaskItem: React.FC<{key: string, id: string, onDelete:(taskId: string) => void}>= (props) => {
   console.log("TaskItem.init.id:"+props.id);
-  const onDelClickHandler = (event) => {
+
+  const onDelClickHandler = (event: React.MouseEvent) => {
     console.log("TaskItem.onDelClickHandler");
     const taskId = event.currentTarget.id;
     console.log("TaskItem.onDelClickHandler.taskId:"+taskId);
