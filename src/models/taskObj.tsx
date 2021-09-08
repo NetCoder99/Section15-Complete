@@ -1,9 +1,12 @@
 class taskObj {
     id:    string;
     text:  string;
-    constructor(todoText: string){
-        this.id = getNextId().toString();
-        this.text = todoText;
+    constructor();
+    constructor(todoText: string);
+    constructor(id: string, todoText: string);
+    constructor(id?: string, todoText?: string){
+        this.id = id || getNextId().toString();
+        this.text = todoText || "";
     }
 }
 

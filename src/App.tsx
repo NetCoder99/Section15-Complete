@@ -1,60 +1,43 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useContext } from 'react';
 
 import TasksList from './components/Tasks/TasksList';
-import NewTask from './components/NewTask/NewTask';
-import useHttp from './hooks/use-http';
+import NewTask   from './components/NewTask/NewTask';
+import useHttp   from './hooks/use-http';
 
 import taskObj from './models/taskObj';
+import {TasksContext} from './hooks/TasksContext';
 
 function App() {
-  const [tasks, setTasks] = useState(Array<taskObj>());
-
+  const TasksCtx = useContext(TasksContext);
   const { isLoading, error, sendRequest: fetchTasks } = useHttp();
+
+  useEffect(() => {
+    refreshFromServerHandler();
+  }, []);
 
   const transformTasks = (taskList : taskObj[]) => {
     console.log("App.useEffect.transformTasks");
-    const loadedTasks = [];
+    TasksCtx.clearTasks();
     for (const taskKey in taskList) {
-      loadedTasks.push({ id: taskList[taskKey].id, text: taskList[taskKey].text });
+      TasksCtx.addTask(taskList[taskKey].id, taskList[taskKey].text );
     }
-    setTasks(loadedTasks);
   };
   
-  useEffect(() => {
-    console.log("App.useEffect");
-    fetchTasks(
-      { url: 'http://localhost:8081/Tasks/getTasks' },
-      transformTasks
-    );
-  }, [fetchTasks]);
-
-  const taskFetchHandler = () => {
-    console.log("App.taskFetchHandler")
+  const refreshFromServerHandler = () => {
+    console.log("App.refreshFromServerHandler")
     fetchTasks(
       { url: 'http://localhost:8081/Tasks/getTasks' },
       transformTasks
     );    
   };
 
-  const taskAddHandler = (task: taskObj) => {
-    console.log("App.taskAddHandler")
-    setTasks((prevTasks) => prevTasks.concat(task));
-  };
-
-  const taskDelHandler = (taskID: string) => {
-    console.log("App.taskDelHandler.taskID:"+taskID)
-    setTasks((prevTasks) => prevTasks.filter(task => task.id !== taskID));
-  };
-
   return (
     <React.Fragment>
-      <NewTask onAddTask={taskAddHandler} />
+      <NewTask />
       <TasksList
-        items={tasks}
         loading={isLoading}
         error={error}
-        onFetch={taskFetchHandler}
-        onDelete={taskDelHandler}
+        onFetch={refreshFromServerHandler}
       />
     </React.Fragment>
   );

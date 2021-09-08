@@ -1,24 +1,26 @@
+import React, {useContext} from "react";
+
 import Section from "../UI/Section";
 import TaskItem from "./TaskItem";
 import classes from "./TasksList.module.css";
 import useHttp from "../../hooks/use-http";
 
 import taskObj from "../../models/taskObj";
-import React from "react";
+import {TasksContext} from '../../hooks/TasksContext';
+
 
 const TasksList: React.FC<{
-  items:    taskObj[];
   loading:  boolean;
   error:    any;
   onFetch:  () => void;
-  onDelete: (taskId: string) => void;
 }> = (props) => {
   console.log("TasksList.init");
-  const { isLoading, error, sendRequest: sendTaskRequest } = useHttp();
+  const TasksCtx = useContext(TasksContext);
+  const { isLoading: isDeleting, error, sendRequest: sendTaskRequest } = useHttp();
 
   const deleteTask = (taskID: string, taskData: taskObj) => {
     console.log("NewTask.deleteTask");
-    props.onDelete(taskID);
+    TasksCtx.delTask(taskID);
   };
 
   const deleteTaskHandler = (taskId: string) => {
@@ -36,12 +38,24 @@ const TasksList: React.FC<{
 
   let taskList = <h2>No tasks found. Start adding some!</h2>;
 
-  if (props.items.length > 0) {
+  // if (props.items.length > 0) {
+  //   taskList = (
+  //     <ul>
+  //       {props.items.map((task) => (
+  //         <TaskItem key={task.id} id={task.id} onDelete={deleteTaskHandler}>
+  //           {task.id} : {task.text}
+  //         </TaskItem>
+  //       ))}
+  //     </ul>
+  //   );
+  // }
+
+  if (TasksCtx.items.length > 0) {
     taskList = (
       <ul>
-        {props.items.map((task) => (
+        {TasksCtx.items.map((task) => (
           <TaskItem key={task.id} id={task.id} onDelete={deleteTaskHandler}>
-            {task.id} : {task.text}
+            Context : {task.id} : {task.text}
           </TaskItem>
         ))}
       </ul>
@@ -57,11 +71,15 @@ const TasksList: React.FC<{
   if (props.loading) {
     content = <span>"Loading tasks..."</span>
   }
+  if (isDeleting) {
+    content = <span>"Deleting task..."</span>
+  }
 
   return (
     <Section>
       <div className={classes.container} onClick={props.onFetch}>
-        <button>Refresh</button>
+        <button disabled={props.loading || isDeleting}>Refresh from server</button>
+        {/* <button disabled={props.loading || isDeleting}>Refresh from cache</button> */}
       </div>
       <hr />
       <div className={classes.container}>{content}</div>

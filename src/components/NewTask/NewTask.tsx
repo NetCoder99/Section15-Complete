@@ -1,21 +1,27 @@
-import Section from '../UI/Section';
-import TaskForm from './TaskForm';
-import useHttp from '../../hooks/use-http';
-import {useCounter} from '../../hooks/useCounter';
+import {useContext} from 'react';
 
-const NewTask = (props) => {
+import Section  from '../UI/Section';
+import TaskForm from './TaskForm';
+import useHttp  from '../../hooks/use-http';
+import {useCounter}   from '../../hooks/useCounter';
+import {TasksContext} from '../../hooks/TasksContext';
+import taskObj from '../../models/taskObj';
+
+const NewTask: React.FC = (props) => {
   console.log("NewTask.init")
 
   const { isLoading, error, sendRequest: sendTaskRequest } = useHttp();
   const taskCounter = useCounter();
+  const TasksCtx    = useContext(TasksContext);
 
-  const createTask = (taskText, taskData) => {
-    console.log("NewTask.createTask")
-    props.onAddTask(taskData.taskEntry);
+  const createTask = (taskText: string, taskData: any) => {
+    console.log("NewTask.createTask");
+    const taskItem: taskObj = new taskObj(taskData.taskEntry.id, taskData.taskEntry.text);
+    TasksCtx.addTask(taskItem.id, taskItem.text);
     taskCounter.increment();
   };
 
-  const enterTaskHandler = async (taskText) => {
+  const enterTaskHandler = async (taskText: string) => {
     console.log("NewTask.enterTaskHandler");
     sendTaskRequest(
       {

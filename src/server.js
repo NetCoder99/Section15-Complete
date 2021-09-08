@@ -37,7 +37,7 @@ export function makeServer({ environment = "dev" } = {}) {
         const taskId = JSON.parse(request.requestBody).taskId;
         schema.taskEntries.find(taskId).destroy();
         return taskId;
-      },{ timing: 200 })
+      },{ timing: 1000 })
     },
   });
 
