@@ -2,9 +2,6 @@ import { MouseEvent, useRef } from "react";
 
 import classes from "./TaskForm.module.css";
 
-//<NewTask onAddTask={taskAddHandler} />
-//const TaskItem: React.FC<{key: string, id: string, onDelete:(taskId: string) => void}>= (props) => {
-//<TaskForm tmpId={taskCounter.counter} onEnterTask={enterTaskHandler} loading={isLoading} />
 const TaskForm: React.FC<{
   tmpId: number;
   onEnterTask: (taskText: any) => Promise<void>;

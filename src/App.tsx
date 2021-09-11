@@ -1,27 +1,25 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useCallback } from 'react';
 
-import TasksList from './components/Tasks/TasksList';
 import NewTask   from './components/NewTask/NewTask';
-import useHttp   from './hooks/use-http';
+import TasksList from './components/Tasks/TasksList';
 
-import taskObj from './models/taskObj';
+import useHttp       from './hooks/use-http';
 import {TasksContext} from './hooks/TasksContext';
+
+import taskObj        from './models/taskObj';
 
 function App() {
   const TasksCtx = useContext(TasksContext);
-  const { isLoading, error, sendRequest: fetchTasks } = useHttp();
+  const { apiStatus, sendRequest: fetchTasks } = useHttp();
 
   useEffect(() => {
     refreshFromServerHandler();
   }, []);
 
-  const transformTasks = (taskList : taskObj[]) => {
+  const transformTasks = useCallback((taskList : taskObj[]) => {
     console.log("App.useEffect.transformTasks");
-    TasksCtx.clearTasks();
-    for (const taskKey in taskList) {
-      TasksCtx.addTask(taskList[taskKey].id, taskList[taskKey].text );
-    }
-  };
+    TasksCtx.setTasks(taskList);
+  }, []);
   
   const refreshFromServerHandler = () => {
     console.log("App.refreshFromServerHandler")
@@ -34,11 +32,13 @@ function App() {
   return (
     <React.Fragment>
       <NewTask />
-      <TasksList
-        loading={isLoading}
-        error={error}
+
+       <TasksList
+        loading={apiStatus.isLoading}
+        error={apiStatus.errorMsg}
         onFetch={refreshFromServerHandler}
       />
+
     </React.Fragment>
   );
 }

@@ -16,7 +16,7 @@ const TasksList: React.FC<{
 }> = (props) => {
   console.log("TasksList.init");
   const TasksCtx = useContext(TasksContext);
-  const { isLoading: isDeleting, error, sendRequest: sendTaskRequest } = useHttp();
+  const { apiStatus, sendRequest: sendTaskRequest } = useHttp();
 
   const deleteTask = (taskID: string, taskData: taskObj) => {
     console.log("NewTask.deleteTask");
@@ -71,14 +71,14 @@ const TasksList: React.FC<{
   if (props.loading) {
     content = <span>"Loading tasks..."</span>
   }
-  if (isDeleting) {
+  if (apiStatus.isLoading) {
     content = <span>"Deleting task..."</span>
   }
 
   return (
     <Section>
       <div className={classes.container} onClick={props.onFetch}>
-        <button disabled={props.loading || isDeleting}>Refresh from server</button>
+        <button disabled={props.loading || apiStatus.isLoading}>Refresh from server</button>
         {/* <button disabled={props.loading || isDeleting}>Refresh from cache</button> */}
       </div>
       <hr />

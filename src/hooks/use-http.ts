@@ -2,12 +2,13 @@ import { useState, useCallback } from 'react';
 
 const useHttp = () => {
   console.log("useHttp.init");
-  const [isLoading, setIsLoading] = useState(false);
-  const [error,     setError]     = useState(null);
+  
+  const apiStatusInit = {isLoading: false,errorMsg: ''};
+  const [apiStatus, setApiStatus] = useState(apiStatusInit);
 
   const sendRequest = useCallback(async (requestConfig, applyData) => {
-    setIsLoading(true);
-    setError(null);
+    console.log("useHttp.sendRequest");
+    setApiStatus({isLoading: true,errorMsg: '',});
     try {
       const response = await fetch(requestConfig.url, {
         method:   requestConfig.method  ? requestConfig.method : 'GET',
@@ -22,15 +23,15 @@ const useHttp = () => {
       const data = await response.json();
       console.log("useHttp.init.applyData");
       applyData(data);
-    } catch (err) {
-      setError(err.message || 'Something went wrong!');
+
+      setApiStatus({isLoading: false,errorMsg: '',});
+    } catch (err: any) {
+      setApiStatus({isLoading: false,errorMsg: err.message || 'Something went wrong!',});
     }
-    setIsLoading(false);
   }, []);
 
   return {
-    isLoading,
-    error,
+    apiStatus,
     sendRequest,
   };
 };
